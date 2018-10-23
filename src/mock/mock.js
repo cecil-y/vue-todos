@@ -63,7 +63,7 @@ export default {
 
         mock.onGet('/todo/listId').reply(config => {
             let {
-                id 
+                id
             } = config.params;
             // id 是传进来的值
             // todo 是根据id和现有的 Todos数据匹配，找出id相等的数据，在进行返回
@@ -79,7 +79,7 @@ export default {
                     resolve([200, {
                         todo: todo
                     }]);
-                },200);
+                }, 200);
             })
         });
 
@@ -88,23 +88,24 @@ export default {
             let {
                 id,
                 text
-            } =JSON.parse(config.data);
+            } = JSON.parse(config.data);
             // id 是传进来的值唯一待办项的id，text 用户新增输入的数据
-            Todos.some((t,index) => {
-                if(t.id === id){
+            Todos.some((t, index) => {
+                if (t.id === id) {
                     trecord.push({
                         text: text,
-                        isDelete:false,
-                        checked:false
+                        isDelete: false,
+                        checked: false
                     });
                     return true;
                 }
             });
-            return new Promise((resolve, reject) =>{
+            return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     resolve([200]);
-                },200);
+                }, 200);
             })
-        })
+        }) ;
+
     }
 }
