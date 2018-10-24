@@ -67,13 +67,13 @@ export default {
             } = config.params;
             // id 是传进来的值
             // todo 是根据id和现有的 Todos数据匹配，找出id相等的数据，在进行返回
-            let code = Todos.find(todo => {
+            let todo = Todos.find(todo => {
                 return id && todo.id === id;
             });
             // todo.count (等待完成数目)等于 todo.record（待办事项列表下面违背选择的数据
-            todo.count = todo.record.filter((data) => {
+            todo ? todo.count = todo ? todo.record.filter((data) => {
                 return data.checked === false;
-            }).length;
+            }).length : null : false;
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     resolve([200, {
@@ -85,14 +85,11 @@ export default {
 
         //新增一条待办事项
         mock.onPost('/todo/addRecord').reply(config => {
-            let {
-                id,
-                text
-            } = JSON.parse(config.data);
+            let { id, text } = JSON.parse(config.data);
             // id 是传进来的值唯一待办项的id，text 用户新增输入的数据
             Todos.some((t, index) => {
                 if (t.id === id) {
-                    trecord.push({
+                    t.record.push({
                         text: text,
                         isDelete: false,
                         checked: false
@@ -105,7 +102,39 @@ export default {
                     resolve([200]);
                 }, 200);
             })
-        }) ;
+        });
 
+        // 修改标题
+        mock.onPost('/todo/editTodo').reply(config => {
+            let { todo } = JSON.parse(config.data);
+            Todos.some((t, index) => {
+                if (t.id === todo.id) {
+                    t.title = todo.title;
+                    t.locked = todo.locked;
+                    t.isDelete = todo.isDelete;
+                    return true;
+                }
+            });
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve([200]);
+                }, 200);
+            })
+        });
+        //修改标题
+        mock.onPost('/todo/editRecord').reply(config => {
+            let { id, record, index } = JSON.parse(config.data);
+            Todos.some((t) => {
+                if (t.id === id) {
+                    t.record[index] = record;
+                    return true;
+                }
+            });
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve([200])
+                }, 200)
+            })
+        })
     }
 }
